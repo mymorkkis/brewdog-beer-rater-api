@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: .
+    ports:
+      - 8080:8080
+    volumes:
+    # TODO If I change this to './main.go:/app/main.go' (so .dockerignore ignores the correct files)
+    # then air live reloading won't work. Why?
+      - ./:/app/
+  db:
+    image: postgres
+    restart: always
+    ports:  # TODO Remove
+      - 5432:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      # TODO Replace with .env vars
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+volumes:
+  db-data:
+    driver: local

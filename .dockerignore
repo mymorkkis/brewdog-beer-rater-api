@@ -1,0 +1,6 @@
+.git
+scratch.go
+*.md
+.*ignore
+docker-compose.yml
+Dockerfile
