@@ -4,6 +4,10 @@ services:
   api:
     build:
       context: .
+    env_file:
+      - .env
+    depends_on:
+      - db
     ports:
       - 8080:8080
     volumes:
@@ -11,16 +15,12 @@ services:
     # then air live reloading won't work. Why?
       - ./:/app/
   db:
-    image: postgres
+    image: postgres:15.1-alpine
     restart: always
-    ports:  # TODO Remove
-      - 5432:5432
+    env_file:
+      - .env
     volumes:
       - db-data:/var/lib/postgresql/data
-    environment:
-      # TODO Replace with .env vars
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
 
 volumes:
   db-data:

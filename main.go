@@ -17,6 +17,11 @@ func main() {
 
 	http.HandleFunc("/hello", helloHandler)
 
+	dbpool := connect()
+	defer dbpool.Close()
+	greetingTest(dbpool)
+
 	log.Println("listening for requests at port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
+
 }
