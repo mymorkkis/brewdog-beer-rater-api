@@ -5,6 +5,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+
+	"github.com/mymorkkis/brewdog-beer-rater-api/db"
 )
 
 func main() {
@@ -17,11 +19,10 @@ func main() {
 
 	http.HandleFunc("/hello", helloHandler)
 
-	dbpool := connect()
+	dbpool := db.Connect()
 	defer dbpool.Close()
-	greetingTest(dbpool)
+	db.GreetingTest(dbpool)
 
 	log.Println("listening for requests at port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
-
 }
