@@ -1,27 +1,17 @@
 package main
 
 import (
-	"fmt"
-	"io"
 	"log"
 	"net/http"
 
-	"github.com/mymorkkis/brewdog-beer-rater-api/db"
+	"github.com/gorilla/mux"
+	"github.com/mymorkkis/brewdog-beer-rater-api/handlers"
 )
 
 func main() {
-	helloHandler := func(w http.ResponseWriter, r *http.Request) {
-		b, _ := io.ReadAll(r.Body)
-		s := fmt.Sprintf("Hello %v\n", string(b))
-		log.Printf(s)
-		io.WriteString(w, s)
-	}
-
-	http.HandleFunc("/hello", helloHandler)
-
-	dbpool := db.Connect()
-	defer dbpool.Close()
-	db.GreetingTest(dbpool)
+	r := mux.NewRouter()
+	r.HandleFunc("/ratings/{userID:[0-9]+}", handlers.RatingsByUser).Methods(http.MethodGet)
+	http.Handle("/", r)
 
 	log.Println("listening for requests at port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))

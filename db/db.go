@@ -3,8 +3,10 @@ package db
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -15,25 +17,24 @@ var databaseURL = fmt.Sprintf(
 	os.Getenv("POSTGRES_DB"),
 )
 
-func Connect() *pgxpool.Pool {
+func connect() *pgxpool.Pool {
 	dbpool, err := pgxpool.New(context.Background(), databaseURL)
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
+		log.Fatalf("Unable to connect to database: %v\n", err)
 	}
 
 	return dbpool
 }
 
-func GreetingTest(dbpool *pgxpool.Pool) {
-	var greeting string
-	err := dbpool.QueryRow(context.Background(), "select 'DB query working'").Scan(&greeting)
+func QueryRows[T Model](query string, parser func(pgx.Rows) []T, args ...any) []T {
+	dbpool := connect()
+	defer dbpool.Close()
 
+	rows, err := dbpool.Query(context.Background(), query, args...)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-		os.Exit(1)
+		log.Fatalf("Unable to execute ratings query: %v", err)
 	}
 
-	fmt.Println(greeting)
+	return parser(rows)
 }
