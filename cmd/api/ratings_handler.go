@@ -1,15 +1,33 @@
 package api
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/mymorkkis/brewdog-beer-rater-api/internal/db/services"
 )
 
+// TODO Ideally I'd have a ratings sub folder but then it can't find Application,
+// would also have the same issue if I create an ratings package.
+// Probably need to refactor how this is implemented, maybe pass handlers to Application?
+
+func (app *Application) RatingCreate(w http.ResponseWriter, r *http.Request) {
+	service := &services.BeerRatingService{DBPool: app.DBPool}
+	// TODO Helpful error if these are not correct types
+	rating, err := service.InsertRating(
+		r.FormValue("userID"),
+		r.FormValue("beerID"),
+		r.FormValue("rating"),
+	)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	app.serveJSON(w, rating)
+}
+
 func (app *Application) RatingsByUser(w http.ResponseWriter, r *http.Request) {
-	// TODO Add mux to Application?
 	vars := mux.Vars(r)
 
 	service := &services.BeerRatingService{DBPool: app.DBPool}
@@ -19,10 +37,5 @@ func (app *Application) RatingsByUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
-	err = json.NewEncoder(w).Encode(&ratings)
-	if err != nil {
-		app.serverError(w, err)
-	}
+	app.serveJSON(w, ratings)
 }

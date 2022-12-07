@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-	// TODO Add router here?
 	app := &api.Application{
 		ErrorLog: internal.ErrorLog,
 		InfoLog:  internal.InfoLog,

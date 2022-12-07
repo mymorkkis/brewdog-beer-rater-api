@@ -17,6 +17,25 @@ type BeerRatingService struct {
 	DBPool *pgxpool.Pool
 }
 
+func (m *BeerRatingService) InsertRating(userID, beerID, rating string) (*BeerRating, error) {
+	var br BeerRating
+
+	row := m.DBPool.QueryRow(
+		context.Background(),
+		"INSERT INTO beer_ratings (user_id, beer_id, rating) VALUES ($1, $2, $3) RETURNING id, user_id, beer_id, rating",
+		userID,
+		beerID,
+		rating,
+	)
+
+	err := row.Scan(&br.ID, &br.UserID, &br.BeerID, &br.Rating)
+	if err != nil {
+		return nil, err
+	}
+
+	return &br, nil
+}
+
 func (m *BeerRatingService) GetRatingsByUser(userID string) ([]*BeerRating, error) {
 	rows, err := m.DBPool.Query(
 		context.Background(),
