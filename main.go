@@ -4,17 +4,17 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
-	"github.com/mymorkkis/brewdog-beer-rater-api/handlers"
+	"github.com/mymorkkis/brewdog-beer-rater-api/cmd/api"
 	"github.com/mymorkkis/brewdog-beer-rater-api/internal"
 )
 
 func main() {
-	r := mux.NewRouter()
-	r.HandleFunc("/ratings/{userID:[0-9]+}", handlers.RatingsByUser).Methods(http.MethodGet)
-	http.Handle("/", r)
+	app := &api.Application{
+		ErrorLog: internal.ErrorLog,
+		InfoLog:  internal.InfoLog,
+	}
 
 	internal.InfoLog.Println("listening for requests at port 8080...")
-	err := http.ListenAndServe(":8080", r)
+	err := http.ListenAndServe(":8080", app.Routes())
 	log.Fatal(err)
 }

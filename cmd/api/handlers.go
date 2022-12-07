@@ -1,24 +1,23 @@
-package handlers
+package api
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/mymorkkis/brewdog-beer-rater-api/db"
 )
 
-func RatingsByUser(w http.ResponseWriter, r *http.Request) {
+func (app *Application) RatingsByUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	ratings, err := db.QueryRows(
 		"select beer_id, rating from beer_ratings where user_id = $1;",
-		parseRows,
+		app.parseRows,
 		vars["userID"],
 	)
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		app.serverError(w, err)
 		return
 	}
 
@@ -26,12 +25,11 @@ func RatingsByUser(w http.ResponseWriter, r *http.Request) {
 
 	err = json.NewEncoder(w).Encode(&ratings)
 	if err != nil {
-		log.Printf("Unable to encode queried data into JSON %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		app.serverError(w, err)
 	}
 }
 
-func parseRows(rows db.Rows) ([]db.BeerRating, error) {
+func (app *Application) parseRows(rows db.Rows) ([]db.BeerRating, error) {
 	ratings := []db.BeerRating{}
 
 	for rows.Next() {
@@ -39,7 +37,7 @@ func parseRows(rows db.Rows) ([]db.BeerRating, error) {
 
 		err := rows.Scan(&br.BeerID, &br.Rating)
 		if err != nil {
-			log.Printf("Unable to parse ratings by user row %v", err)
+			app.ErrorLog.Printf("Unable to parse ratings by user row %v", err)
 			return nil, err
 		}
 
