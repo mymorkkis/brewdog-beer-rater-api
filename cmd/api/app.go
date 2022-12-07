@@ -5,11 +5,13 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Application struct {
 	ErrorLog *log.Logger
 	InfoLog  *log.Logger
+	DBPool   *pgxpool.Pool
 }
 
 func (app *Application) Routes() *mux.Router {
