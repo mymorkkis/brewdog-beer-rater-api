@@ -9,7 +9,7 @@ import (
 )
 
 // TODO Ideally I'd have a ratings sub folder but then it can't find Application,
-// would also have the same issue if I create an ratings package.
+// would also have the same issue if I create a ratings package.
 // Probably need to refactor how this is implemented, maybe pass handlers to Application?
 
 func (app *Application) RatingCreate(w http.ResponseWriter, r *http.Request) {
