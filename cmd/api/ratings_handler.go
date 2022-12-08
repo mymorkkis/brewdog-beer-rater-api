@@ -13,7 +13,7 @@ import (
 
 func (app *Application) RatingCreate(w http.ResponseWriter, r *http.Request) {
 	service := &services.BeerRatingService{DBPool: app.DBPool}
-	// TODO Handle unique constraint here with user/beer here
+	// TODO Handle unique constraint with user/beer here
 
 	// TODO Helpful error if these are not correct types
 	rating, err := service.InsertRating(

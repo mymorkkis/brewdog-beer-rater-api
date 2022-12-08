@@ -46,6 +46,7 @@ func (m *BeerRatingService) GetRatingsByUser(userID string) ([]*BeerRating, erro
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	ratings := []*BeerRating{}
 
@@ -58,6 +59,10 @@ func (m *BeerRatingService) GetRatingsByUser(userID string) ([]*BeerRating, erro
 		}
 
 		ratings = append(ratings, &br)
+	}
+
+	if rows.Err() != nil {
+		return nil, rows.Err()
 	}
 
 	return ratings, nil
