@@ -2,7 +2,9 @@ package services
 
 import (
 	"context"
+	"errors"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -17,6 +19,8 @@ type BeerRatingService struct {
 	DBPool *pgxpool.Pool
 }
 
+// TODO update the parameter types in these method to accept the proper types
+
 func (m *BeerRatingService) InsertRating(userID, beerID, rating string) (*BeerRating, error) {
 	var br BeerRating
 
@@ -29,8 +33,26 @@ func (m *BeerRatingService) InsertRating(userID, beerID, rating string) (*BeerRa
 		rating,
 	)
 
-	err := row.Scan(&br.ID, &br.UserID, &br.BeerID, &br.Rating)
-	if err != nil {
+	if err := row.Scan(&br.ID, &br.UserID, &br.BeerID, &br.Rating); err != nil {
+		return nil, err
+	}
+
+	return &br, nil
+}
+
+func (m *BeerRatingService) GetRating(ratingID string) (*BeerRating, error) {
+	var br BeerRating
+
+	row := m.DBPool.QueryRow(
+		context.Background(),
+		"SELECT id, user_id, beer_id, rating FROM beer_ratings WHERE id = $1",
+		ratingID,
+	)
+
+	if err := row.Scan(&br.ID, &br.UserID, &br.BeerID, &br.Rating); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrNoRecord
+		}
 		return nil, err
 	}
 

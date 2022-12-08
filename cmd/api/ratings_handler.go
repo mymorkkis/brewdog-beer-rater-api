@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -23,6 +24,23 @@ func (app *Application) RatingCreate(w http.ResponseWriter, r *http.Request) {
 	)
 	if err != nil {
 		app.serverError(w, err)
+		return
+	}
+
+	app.serveJSON(w, rating)
+}
+
+func (app *Application) RatingGet(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	service := &services.BeerRatingService{DBPool: app.DBPool}
+	rating, err := service.GetRating(vars["ratingID"])
+	if err != nil {
+		if errors.Is(err, services.ErrNoRecord) {
+			app.clientError(w, http.StatusNotFound)
+		} else {
+			app.serverError(w, err)
+		}
 		return
 	}
 

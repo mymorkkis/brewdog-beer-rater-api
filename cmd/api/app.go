@@ -20,8 +20,9 @@ func (app *Application) Routes() *mux.Router {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/rating/create", app.RatingCreate).Methods(http.MethodPost)
+	r.HandleFunc("/rating/{ratingID:[0-9]+}", app.RatingGet).Methods(http.MethodGet)
 	r.HandleFunc("/ratings/{userID:[0-9]+}", app.RatingsByUser).Methods(http.MethodGet)
-	http.Handle("/", r)
+	r.Handle("/", r)
 
 	return r
 }
