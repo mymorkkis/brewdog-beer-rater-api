@@ -16,7 +16,7 @@ func main() {
 	wd, err := os.Getwd()
 	checkErr(err)
 
-	dirPath := filepath.Join(wd, "db", "migrations")
+	dirPath := filepath.Join(wd, "internal", "db", "migrations")
 	nextVersion := getNextVersionNumber(dirPath)
 
 	downFile := fmt.Sprintf("%v_%v.down.sql", nextVersion, migrationName)

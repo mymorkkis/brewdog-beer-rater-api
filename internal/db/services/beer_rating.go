@@ -22,7 +22,8 @@ func (m *BeerRatingService) InsertRating(userID, beerID, rating string) (*BeerRa
 
 	row := m.DBPool.QueryRow(
 		context.Background(),
-		"INSERT INTO beer_ratings (user_id, beer_id, rating) VALUES ($1, $2, $3) RETURNING id, user_id, beer_id, rating",
+		`INSERT INTO beer_ratings (user_id, beer_id, rating) VALUES ($1, $2, $3)
+			RETURNING id, user_id, beer_id, rating`,
 		userID,
 		beerID,
 		rating,
