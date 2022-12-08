@@ -18,9 +18,9 @@ func (app *Application) RatingCreate(w http.ResponseWriter, r *http.Request) {
 
 	// TODO Helpful error if these are not correct types
 	rating, err := service.InsertRating(
-		r.FormValue("userID"),
-		r.FormValue("beerID"),
-		r.FormValue("rating"),
+		r.URL.Query().Get("userID"),
+		r.URL.Query().Get("beerID"),
+		r.URL.Query().Get("rating"),
 	)
 	if err != nil {
 		app.serverError(w, err)
