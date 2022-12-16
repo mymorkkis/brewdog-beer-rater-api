@@ -21,10 +21,10 @@ type BeerRatingService struct {
 
 // TODO update the parameter types in these method to accept the proper types
 
-func (m *BeerRatingService) InsertRating(userID, beerID, rating string) (*BeerRating, error) {
+func (s *BeerRatingService) InsertRating(userID, beerID, rating string) (*BeerRating, error) {
 	var br BeerRating
 
-	row := m.DBPool.QueryRow(
+	row := s.DBPool.QueryRow(
 		context.Background(),
 		`INSERT INTO beer_ratings (user_id, beer_id, rating) VALUES ($1, $2, $3)
 			RETURNING id, user_id, beer_id, rating`,
@@ -40,10 +40,10 @@ func (m *BeerRatingService) InsertRating(userID, beerID, rating string) (*BeerRa
 	return &br, nil
 }
 
-func (m *BeerRatingService) GetRating(ratingID string) (*BeerRating, error) {
+func (s *BeerRatingService) GetRating(ratingID string) (*BeerRating, error) {
 	var br BeerRating
 
-	row := m.DBPool.QueryRow(
+	row := s.DBPool.QueryRow(
 		context.Background(),
 		"SELECT id, user_id, beer_id, rating FROM beer_ratings WHERE id = $1",
 		ratingID,
@@ -59,8 +59,8 @@ func (m *BeerRatingService) GetRating(ratingID string) (*BeerRating, error) {
 	return &br, nil
 }
 
-func (m *BeerRatingService) GetRatingsByUser(userID string) ([]*BeerRating, error) {
-	rows, err := m.DBPool.Query(
+func (s *BeerRatingService) GetRatingsByUser(userID string) ([]*BeerRating, error) {
+	rows, err := s.DBPool.Query(
 		context.Background(),
 		"SELECT id, user_id, beer_id, rating FROM beer_ratings WHERE user_id = $1;",
 		userID,

@@ -37,7 +37,7 @@ func (app *Application) RatingGet(w http.ResponseWriter, r *http.Request) {
 	rating, err := service.GetRating(vars["ratingID"])
 	if err != nil {
 		if errors.Is(err, services.ErrNoRecord) {
-			app.clientError(w, http.StatusNotFound)
+			app.clientErrorWithStatusMessage(w, http.StatusNotFound)
 		} else {
 			app.serverError(w, err)
 		}
